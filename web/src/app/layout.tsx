@@ -1,14 +1,21 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import InstallPrompt from '@/components/InstallPrompt'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const viewport: Viewport = {
+  themeColor: '#22c55e',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 export const metadata: Metadata = {
   title: 'Peacock Egg Detector',
-  description: 'Identify peacock egg fertility using AI',
+  description: 'Deteksi fertilitas telur merak menggunakan AI - Identify peacock egg fertility using AI',
   manifest: '/manifest.json',
-  themeColor: '#22c55e',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -24,11 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={inter.className}>
+        <InstallPrompt />
         {children}
         <script
           dangerouslySetInnerHTML={{
