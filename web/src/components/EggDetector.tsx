@@ -121,36 +121,57 @@ export default function EggDetector() {
           )}
         </div>
 
-        {/* Upload Area */}
+        {/* Upload Area - Two Options */}
         {!preview && (
           <div
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-green-300 rounded-2xl p-12 text-center bg-white hover:border-green-500 transition-all hover:shadow-lg cursor-pointer"
+            className="space-y-4"
           >
+            {/* Hidden inputs */}
             <input
               type="file"
               accept="image/*"
               capture="environment"
               onChange={handleFileSelect}
               className="hidden"
-              id="file-input"
+              id="camera-input"
               disabled={isAnalyzing}
             />
-            <label htmlFor="file-input" className="cursor-pointer block">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Camera className="w-8 h-8 text-green-600" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+              id="gallery-input"
+              disabled={isAnalyzing}
+            />
+
+            {/* Camera Button */}
+            <label
+              htmlFor="camera-input"
+              className="block bg-white border-2 border-green-300 rounded-2xl p-6 text-center hover:border-green-500 hover:shadow-lg transition-all cursor-pointer"
+            >
+              <div className="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Camera className="w-7 h-7 text-green-600" />
               </div>
-              <p className="text-lg font-semibold text-gray-800 mb-2">
-                Ambil Foto atau Pilih Gambar
-              </p>
-              <p className="text-sm text-gray-500">
-                Tap untuk membuka kamera atau memilih dari galeri
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                Format: JPG, PNG, WebP
-              </p>
+              <p className="text-lg font-bold text-gray-800">📷 Ambil Foto</p>
+              <p className="text-sm text-gray-500 mt-1">Buka kamera untuk mengambil foto telur</p>
             </label>
+
+            {/* Gallery Button */}
+            <label
+              htmlFor="gallery-input"
+              className="block bg-white border-2 border-blue-300 rounded-2xl p-6 text-center hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer"
+            >
+              <div className="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Upload className="w-7 h-7 text-blue-600" />
+              </div>
+              <p className="text-lg font-bold text-gray-800">🖼️ Pilih dari Galeri</p>
+              <p className="text-sm text-gray-500 mt-1">Pilih gambar telur dari galeri atau file</p>
+            </label>
+
+            <p className="text-xs text-gray-400 text-center">Format: JPG, PNG, WebP</p>
           </div>
         )}
 
@@ -303,27 +324,7 @@ export default function EggDetector() {
           </div>
         )}
 
-        {/* Download APK Section */}
-        <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 text-center">
-          <div className="text-4xl mb-3">📱</div>
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Install Sebagai Aplikasi</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Gunakan Peacock Egg Detector sebagai aplikasi di HP Android Anda
-          </p>
-          <div className="space-y-3">
-            <a
-              href="https://AzmiFirmansah.github.io/merak-apk/merak-app.apk"
-              className="block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all hover:shadow-lg"
-              target="_blank"
-            >
-              ⬇️ Download APK
-            </a>
-            <div className="text-xs text-gray-400 mt-2">
-              <p className="mb-1">Atau install langsung dari browser:</p>
-              <p>Chrome → Menu (⋮) → <strong>&quot;Install app&quot;</strong> atau <strong>&quot;Add to Home Screen&quot;</strong></p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Footer */}
         <div className="mt-6 text-center text-xs text-gray-400 pb-4">
