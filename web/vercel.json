@@ -1,9 +1,8 @@
 {
-  "framework": "nextjs",
-  "functions": {
-    "api/predict.py": {
-      "runtime": "@vercel/python",
-      "maxDuration": 30
+    "framework": "nextjs",
+    "functions": {
+        "api/predict.py": {
+            "maxDuration": 30
+        }
     }
-  }
 }
