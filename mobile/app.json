@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Peacock Egg Detector",
+    "slug": "peacock-egg-detector",
+    "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#22c55e"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.peacockegg.detector"
+    },
+    "android": {
+      "package": "com.peacockegg.detector"
+    }
+  }
+}
