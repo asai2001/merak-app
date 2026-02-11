@@ -203,8 +203,8 @@ export default function EggDetector() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-800">Hasil Analisis</h2>
                   <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${matchDetails?.matched
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-blue-100 text-blue-800'
+                    ? 'bg-purple-100 text-purple-800'
+                    : 'bg-blue-100 text-blue-800'
                     }`}>
                     {matchDetails?.matched ? (
                       <><Database className="w-3 h-3" /> Dataset Match</>
@@ -216,8 +216,8 @@ export default function EggDetector() {
 
                 {/* Prediction result */}
                 <div className={`text-center p-6 rounded-xl mb-4 ${result.prediction === 'fertile'
-                    ? 'bg-green-50 border-2 border-green-200'
-                    : 'bg-red-50 border-2 border-red-200'
+                  ? 'bg-green-50 border-2 border-green-200'
+                  : 'bg-red-50 border-2 border-red-200'
                   }`}>
                   <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${result.prediction === 'fertile' ? 'bg-green-100' : 'bg-red-100'
                     }`}>
@@ -303,12 +303,31 @@ export default function EggDetector() {
           </div>
         )}
 
-        {/* Footer */}
-        <div className="mt-8 text-center text-xs text-gray-400">
-          <p className="flex items-center justify-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5" />
-            AI-powered peacock egg fertility detection
+        {/* Download APK Section */}
+        <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 text-center">
+          <div className="text-4xl mb-3">📱</div>
+          <h3 className="text-lg font-bold text-gray-800 mb-2">Install Sebagai Aplikasi</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Gunakan Peacock Egg Detector sebagai aplikasi di HP Android Anda
           </p>
+          <div className="space-y-3">
+            <a
+              href="https://AzmiFirmansah.github.io/merak-apk/merak-app.apk"
+              className="block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all hover:shadow-lg"
+              target="_blank"
+            >
+              ⬇️ Download APK
+            </a>
+            <div className="text-xs text-gray-400 mt-2">
+              <p className="mb-1">Atau install langsung dari browser:</p>
+              <p>Chrome → Menu (⋮) → <strong>&quot;Install app&quot;</strong> atau <strong>&quot;Add to Home Screen&quot;</strong></p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-6 text-center text-xs text-gray-400 pb-4">
+          <p>🦚 AI-powered peacock egg fertility detection</p>
         </div>
       </div>
     </main>
