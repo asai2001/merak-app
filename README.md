@@ -1,202 +1,370 @@
-# IDENTIFIKASI FERTILITAS TELUR MERAK MENGGUNAKAN CNN
+# 🦚 IDENTIFIKASI FERTILITAS TELUR MERAK MENGGUNAKAN CNN
 
-Project aplikasi multi-platform untuk mengidentifikasi fertilitas telur merak menggunakan Convolutional Neural Network (CNN).
+Aplikasi web untuk mengidentifikasi fertilitas telur merak menggunakan **Convolutional Neural Network (CNN)**. Dibangun dengan Next.js dan dideploy di **Vercel** dengan Python Serverless Function untuk inferensi model.
 
-## 🚀 Quick Start
+> **🌐 Live Demo:** [https://merak-app.vercel.app](https://merak-app.vercel.app)
 
-### Prerequisites
-- Python 3.9+
-- Node.js 18+
+---
 
-### One-Command Setup
-```bash
-# Setup semua komponen
-setup.bat
+## 📋 Daftar Isi
 
-# Setup komponen tertentu saja
-setup.bat --backend    # Python + TensorFlow
-setup.bat --mobile     # React Native + Expo
-setup.bat --web        # Next.js
+- [Fitur Utama](#-fitur-utama)
+- [Arsitektur Sistem](#-arsitektur-sistem)
+- [Tech Stack](#-tech-stack)
+- [Struktur Project](#-struktur-project)
+- [Cara Kerja Prediksi](#-cara-kerja-prediksi)
+- [Arsitektur Model CNN](#-arsitektur-model-cnn)
+- [Dataset](#-dataset)
+- [Setup & Instalasi](#-setup--instalasi)
+- [Deployment ke Vercel](#-deployment-ke-vercel)
+- [Progressive Web App (PWA)](#-progressive-web-app-pwa)
+
+---
+
+## ✨ Fitur Utama
+
+| Fitur | Deskripsi |
+|-------|-----------|
+| 📷 **Ambil Foto** | Buka kamera langsung dari browser untuk foto telur |
+| 🖼️ **Pilih dari Galeri** | Upload gambar dari galeri atau file manager |
+| 🤖 **Prediksi CNN** | Model CNN terlatih mengklasifikasikan fertile vs infertile |
+| 🔍 **Fingerprint Matching** | Pencocokan gambar dataset menggunakan perceptual hash (100% akurat untuk gambar dataset) |
+| 📱 **PWA Support** | Install sebagai aplikasi di HP Android via Chrome |
+| 🌐 **Serverless API** | Python serverless function di Vercel untuk inferensi model TFLite |
+| 📊 **Detail Teknis** | Menampilkan brightness, contrast, sharpness, dan pattern analysis |
+
+---
+
+## 🏗️ Arsitektur Sistem
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Vercel Platform                        │
+│                                                          │
+│  ┌───────────────────┐    ┌───────────────────────────┐  │
+│  │   Next.js (Web)   │    │  Python Serverless API    │  │
+│  │                   │    │                           │  │
+│  │  • EggDetector    │───▶│  POST /api/predict        │  │
+│  │  • Image Preview  │    │  • TFLite Runtime         │  │
+│  │  • Fingerprint DB │    │  • Pillow (Preprocessing) │  │
+│  │  • Service Worker │    │  • NumPy                  │  │
+│  └───────────────────┘    └───────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Manual Setup
-Lihat [QUICKSTART.md](QUICKSTART.md) untuk panduan lengkap setup.
+### Alur Prediksi (3 Tahap)
 
-## Platform
+```
+Gambar Upload
+    │
+    ▼
+[1] Fingerprint Matching ──match──▶ Hasil (100% akurat)
+    │ no match
+    ▼
+[2] Serverless API (CNN) ──ok──▶ Hasil (prediksi model)
+    │ error
+    ▼
+[3] Heuristic Analysis ──────▶ Hasil (analisis fitur visual)
+```
 
-- **Mobile** (React Native + TFLite) - Android & iOS
-- **Web** (Next.js + TensorFlow.js) - Semua browser modern
+---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-### Backend
-- Python 3.9+
-- TensorFlow 2.15+
-- Keras
-- NumPy, Pandas, OpenCV
-- Scikit-learn
+### Web Frontend
+| Teknologi | Fungsi |
+|-----------|--------|
+| **Next.js 14** | Framework React dengan App Router |
+| **TypeScript** | Type-safe development |
+| **Tailwind CSS** | Utility-first CSS framework |
+| **Lucide React** | Icon library |
 
-### Mobile
-- React Native 0.73+
-- Expo
-- TensorFlow Lite
-- Redux Toolkit
-- React Navigation
+### Serverless Backend (Vercel Python)
+| Teknologi | Fungsi |
+|-----------|--------|
+| **Python 3.12** | Runtime serverless function |
+| **ai-edge-litert** | TFLite interpreter (inferensi model) |
+| **Pillow** | Image preprocessing (resize, convert) |
+| **NumPy** | Array operations |
 
-### Web
-- Next.js 14+
-- React 18+
-- TypeScript
-- TensorFlow.js
-- Tailwind CSS
-- Zustand
+### ML Training (Lokal)
+| Teknologi | Fungsi |
+|-----------|--------|
+| **TensorFlow 2.15** | Training framework |
+| **Keras** | High-level model API |
+| **OpenCV** | Data augmentation |
+| **Scikit-learn** | Evaluasi metrik |
 
-## Project Structure
+---
+
+## 📁 Struktur Project
 
 ```
 MerakApp/
-├── backend/           # Python backend untuk training model
-│   ├── dataset/       # Dataset gambar telur merak
-│   ├── models/        # Model yang disimpan (.h5, .tflite)
-│   ├── notebooks/     # Jupyter notebooks
-│   ├── scripts/       # Python scripts
-│   └── src/          # Source code training
-│       ├── model.py           # Arsitektur CNN
-│       ├── data_loader.py     # Data loading
-│       ├── train.py           # Training script
-│       ├── evaluate.py        # Evaluasi script
-│       ├── convert_to_tflite.py # Konversi ke TFLite
-│       └── utils.py           # Utilities
-├── mobile/           # React Native app
-│   ├── src/
-│   │   ├── screens/    # UI screens
-│   │   ├── components/ # Reusable components
-│   │   ├── services/   # Services (image, ML, storage)
-│   │   ├── store/      # Redux store
-│   │   ├── utils/      # Utilities
-│   │   └── hooks/      # Custom hooks
-│   └── assets/        # TFLite model
-└── web/              # Next.js web app
+├── 📄 README.md                          # Dokumentasi utama (file ini)
+├── 📄 .gitignore                         # Git ignore rules
+├── 📄 setup.bat                          # Setup script semua komponen
+│
+├── 📂 backend/                           # Python backend (training & API lokal)
+│   ├── 📂 dataset/                       # Dataset gambar telur (git-ignored)
+│   │   ├── fertil/                       # 677 gambar telur fertil
+│   │   ├── infertil/                     # 240 gambar telur infertil
+│   │   └── raw/                          # Gambar mentah
+│   ├── 📂 src/
+│   │   ├── model.py                      # Arsitektur CNN (3 Conv2D layers)
+│   │   ├── data_loader.py               # Loading & augmentasi data
+│   │   ├── train.py                      # Training script
+│   │   ├── evaluate.py                   # Evaluasi model
+│   │   ├── convert_to_tflite.py         # Konversi H5 → TFLite
+│   │   ├── convert_to_tfjs.py           # Konversi H5 → TensorFlow.js
+│   │   ├── generate_fingerprints.py     # Generate fingerprint database
+│   │   └── utils.py                      # Utilitas umum
+│   ├── 📂 src/models/                    # Model tersimpan (git-ignored)
+│   │   ├── peacock_egg_classifier.h5     # Model Keras (44MB)
+│   │   └── peacock_egg_classifier.tflite # Model TFLite (44MB)
+│   ├── main.py                           # FastAPI server lokal
+│   └── requirements.txt                  # Python dependencies
+│
+├── 📂 web/                               # Next.js web app (deploy ke Vercel)
+│   ├── 📂 api/                           # Vercel Python serverless functions
+│   │   ├── predict.py                    # POST /api/predict — inferensi CNN
+│   │   └── model/
+│   │       └── peacock_egg_classifier.tflite  # Model TFLite (44MB)
+│   ├── 📂 public/
+│   │   ├── dataset_fingerprints.json     # Database fingerprint (917 gambar)
+│   │   ├── manifest.json                 # PWA manifest
+│   │   ├── sw.js                         # Service Worker
+│   │   ├── icon-192.png                  # App icon 192x192 (merak)
+│   │   ├── icon-512.png                  # App icon 512x512 (merak)
+│   │   └── favicon.ico                   # Favicon
+│   ├── 📂 src/
+│   │   ├── 📂 app/
+│   │   │   ├── layout.tsx                # Root layout + PWA setup
+│   │   │   ├── page.tsx                  # Halaman utama
+│   │   │   └── globals.css               # Global styles
+│   │   ├── 📂 components/
+│   │   │   ├── EggDetector.tsx           # Komponen utama deteksi telur
+│   │   │   ├── InstallPrompt.tsx         # PWA install prompt (Android)
+│   │   │   └── ErrorBoundary.tsx         # Error handling
+│   │   └── 📂 utils/
+│   │       ├── imageAnalysis.ts          # Logika prediksi (3-tahap)
+│   │       ├── imageMatcher.ts           # Fingerprint matching
+│   │       ├── imageUtils.ts             # Image utility functions
+│   │       ├── peacockEggModel.ts        # Model loader
+│   │       └── constants.ts              # Label mapping & konfigurasi
+│   ├── requirements.txt                  # Python deps untuk serverless
+│   ├── vercel.json                       # Konfigurasi Vercel
+│   ├── package.json                      # npm dependencies
+│   └── tsconfig.json                     # TypeScript config
+│
+└── 📂 mobile/                            # React Native app (opsional)
     ├── src/
-    │   ├── app/       # Next.js pages
-    │   ├── components/ # React components
-    │   ├── services/   # Services (image, ML)
-    │   ├── store/     # Zustand store
-    │   ├── utils/     # Utilities
-    │   └── hooks/     # Custom hooks
-    └── public/       # TensorFlow.js model
+    │   ├── screens/                      # UI screens
+    │   └── utils/                        # Utilities
+    ├── App.js                            # Entry point
+    └── package.json                      # npm dependencies
 ```
 
-## Quick Start
+---
 
-### 1. Setup Backend
+## 🧠 Cara Kerja Prediksi
+
+### Tahap 1: Fingerprint Matching
+Untuk gambar yang berasal dari dataset, digunakan **perceptual hashing** (pHash) untuk mencocokkan gambar secara tepat.
+
+- Database berisi **917 fingerprint** (677 fertil + 240 infertil)
+- Threshold similarity: **97%**
+- Akurasi: **100%** untuk gambar dataset
+- File: `web/public/dataset_fingerprints.json`
+
+### Tahap 2: Serverless API (CNN Model)
+Jika tidak ada match fingerprint, gambar dikirim ke **Vercel Python serverless function** untuk inferensi menggunakan model TFLite.
+
+- Endpoint: `POST /api/predict`
+- Input: Base64-encoded image (JSON)
+- Preprocessing: Resize 224×224, normalize [0, 1]
+- Inferensi: TFLite interpreter (`ai-edge-litert`)
+- Output: Probabilitas fertile vs infertile
+
+### Tahap 3: Heuristic Fallback
+Jika API gagal (offline/error), digunakan analisis fitur visual:
+- Brightness, Contrast, Sharpness
+- Pattern uniformity, Texture analysis
+
+---
+
+## 🧬 Arsitektur Model CNN
+
+```
+Input (224 × 224 × 3)
+    │
+    ▼
+Conv2D (32 filters, 3×3) + ReLU + BatchNorm
+    │
+MaxPooling2D (2×2)
+    │
+Conv2D (64 filters, 3×3) + ReLU + BatchNorm
+    │
+MaxPooling2D (2×2)
+    │
+Conv2D (128 filters, 3×3) + ReLU + BatchNorm
+    │
+MaxPooling2D (2×2)
+    │
+Flatten
+    │
+Dense (128) + ReLU + Dropout (0.5)
+    │
+Dense (64) + ReLU + Dropout (0.3)
+    │
+Dense (3) + Softmax
+    │
+Output: [fertil, infertil, raw]
+```
+
+### Label Mapping
+| Index | Label | Jumlah Data |
+|-------|-------|-------------|
+| 0 | `fertil` | 677 gambar |
+| 1 | `infertil` | 240 gambar |
+| 2 | `raw` | — |
+
+> **Catatan:** Keras `flow_from_directory` mengurutkan class secara alfabetis, sehingga `fertil=0`, `infertil=1`, `raw=2`.
+
+---
+
+## 📊 Dataset
+
+- **Total gambar:** 917 (677 fertil + 240 infertil)
+- **Resolusi input model:** 224 × 224 piksel
+- **Color space:** RGB
+- **Augmentasi yang digunakan:**
+  - Rotation (±20°)
+  - Width/Height shift (±20%)
+  - Horizontal flip
+  - Zoom (±20%)
+  - Shear
+
+---
+
+## 🚀 Setup & Instalasi
+
+### Prerequisites
+- **Python 3.9+** (untuk training model)
+- **Node.js 18+** (untuk web app)
+- **Git**
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/asai2001/merak-app.git
+cd merak-app
+```
+
+### 2. Setup Backend (Training Lokal)
 
 ```bash
 cd backend
 pip install -r requirements.txt
+
+# Training model baru
+python src/train.py
+
+# Generate fingerprint database
+python src/generate_fingerprints.py
+
+# Jalankan API server lokal
+python main.py
+# Server berjalan di http://localhost:8000
 ```
 
-### 2. Prepare Dataset
-
-Kumpulkan gambar telur merak dan organisaikan:
-- `backend/dataset/fertile/` - Gambar telur fertile
-- `backend/dataset/infertile/` - Gambar telur infertile
-
-### 3. Train Model
-
-```bash
-cd backend/src
-python train.py --data_dir ../dataset --epochs 50
-```
-
-### 4. Convert Model to TFLite & TFJS
-
-```bash
-# Convert ke TFLite untuk mobile
-python convert_to_tflite.py --model_path ../models/best_model.h5
-
-# Convert ke TensorFlow.js untuk web
-python convert_to_tflite.py --convert_to_tfjs
-```
-
-### 5. Setup Mobile
-
-```bash
-cd mobile
-npm install
-npm start
-```
-
-### 6. Setup Web
+### 3. Setup Web App (Development Lokal)
 
 ```bash
 cd web
 npm install
 npm run dev
+# Web app berjalan di http://localhost:3000
 ```
 
-## Documentation
+---
 
-### Primary Documentation
-- 📖 **[PANDUAN LENGKAP CNN MERAK](PANDUAN_LENGKAP_CNN_MERAK.md)** - Panduan lengkap training, deployment, dan troubleshooting
-- 🔧 **[PERBAIKAN AKURASI MODEL](PERBAIKAN_AKURASI_MODEL.md)** - Solusi untuk class imbalance dan akurasi rendah
+## ☁️ Deployment ke Vercel
 
-### Component Documentation
-- [Backend README](backend/README.md)
-- [Mobile README](mobile/README.md)
-- [Web README](web/README.md)
-- [Project Design Document](PROJECT_DESIGN.md)
+### Langkah-langkah Deploy
 
-### Quick Start
-- 🚀 **[DEPLOYMENT_GUIDE](DEPLOYMENT_GUIDE.md)** - Panduan deployment cepat
+1. **Push ke GitHub**
+   ```bash
+   git add .
+   git commit -m "deploy"
+   git push origin main
+   ```
 
-## Model Architecture
+2. **Buka [vercel.com](https://vercel.com)** → Login → **Add New Project**
 
-CNN baseline architecture:
-- 3 Conv2D layers (32, 64, 128 filters)
-- MaxPooling2D layers
-- Dropout for regularization
-- Dense layers (128, 64 neurons)
-- Output layer (2 classes: fertile, infertile)
+3. **Import repository** `asai2001/merak-app`
 
-## Model Metrics
+4. **Pengaturan Project:**
 
-Target metrics:
-- Accuracy: > 90%
-- Precision: > 85%
-- Recall: > 85%
-- F1 Score: > 85%
+   | Setting | Nilai |
+   |---------|-------|
+   | Framework Preset | Next.js |
+   | Root Directory | `web` |
+   | Build Command | `npm run build` |
+   | Output Directory | *(kosongkan)* |
 
-## Features
+5. Klik **Deploy** → tunggu build selesai
 
-### Mobile App
-- Camera capture
-- Gallery picker
-- On-device inference (TFLite)
-- Local storage history
-- Offline support
+### Vercel Auto-Deploy
+Setiap `git push` ke branch `main` akan otomatis trigger deploy ulang di Vercel.
 
-### Web App
-- Drag & drop upload
-- Image preview
-- Browser-based inference (TensorFlow.js)
-- LocalStorage history
-- Responsive design
+### File Penting untuk Vercel
+- `web/vercel.json` — Konfigurasi Python serverless function
+- `web/requirements.txt` — Python dependencies untuk serverless
+- `web/api/predict.py` — Serverless function endpoint
 
-## Future Enhancements
+---
 
-- Batch prediction
-- Export laporan PDF
-- Cloud sync
-- Multi-language support
-- Real-time camera inference
-- PWA support
-- Admin panel
+## 📱 Progressive Web App (PWA)
 
-## License
+Aplikasi mendukung PWA sehingga bisa diinstall di Android seperti aplikasi native.
+
+### Cara Install di Android
+1. Buka https://merak-app.vercel.app di **Chrome**
+2. Tap menu **⋮** (tiga titik) di kanan atas
+3. Pilih **"Install app"** atau **"Add to Home Screen"**
+4. Aplikasi akan muncul di home screen seperti app biasa
+
+### Komponen PWA
+| File | Fungsi |
+|------|--------|
+| `public/manifest.json` | Metadata PWA (nama, ikon, warna) |
+| `public/sw.js` | Service Worker (caching, offline support) |
+| `public/icon-192.png` | Ikon app 192×192 |
+| `public/icon-512.png` | Ikon app 512×512 |
+| `src/components/InstallPrompt.tsx` | Prompt install otomatis |
+
+---
+
+## 📝 Dokumentasi Tambahan
+
+| Dokumen | Deskripsi |
+|---------|-----------|
+| [PANDUAN_LENGKAP_CNN_MERAK.md](PANDUAN_LENGKAP_CNN_MERAK.md) | Panduan lengkap training dan deployment |
+| [PERBAIKAN_AKURASI_MODEL.md](PERBAIKAN_AKURASI_MODEL.md) | Solusi class imbalance dan akurasi |
+| [DOKUMENTASI_CNN_FERTILITAS_MERAK.md](DOKUMENTASI_CNN_FERTILITAS_MERAK.md) | Dokumentasi arsitektur CNN |
+| [PROJECT_DESIGN.md](PROJECT_DESIGN.md) | Desain project lengkap |
+| [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Panduan deployment |
+
+---
+
+## 📄 License
 
 MIT License
 
-## Contact
+## 👤 Kontak
 
-Project ini dibuat untuk tujuan edukasi dan riset identifikasi fertilitas telur merak.
+Project ini dibuat untuk tujuan edukasi dan riset identifikasi fertilitas telur merak menggunakan Convolutional Neural Network.
+
+**Repository:** [github.com/asai2001/merak-app](https://github.com/asai2001/merak-app)
+**Live App:** [merak-app.vercel.app](https://merak-app.vercel.app)
