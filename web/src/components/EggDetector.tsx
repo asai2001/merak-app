@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Upload, Loader2, CheckCircle, XCircle, Info, Cpu, Database, Camera } from 'lucide-react'
+import { Upload, Loader2, CheckCircle, XCircle, Cpu, Database, Camera } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { User } from '@supabase/supabase-js'
+import Link from 'next/link'
 
 export default function EggDetector() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -16,6 +19,7 @@ export default function EggDetector() {
   const [isInitializing, setIsInitializing] = useState(true)
   const [fertilityIndicators, setFertilityIndicators] = useState<any>(null)
   const [matchDetails, setMatchDetails] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const imageUtilsRef = useRef<any>(null)
 
   useEffect(() => {
@@ -35,6 +39,13 @@ export default function EggDetector() {
       }
     }
     initialize()
+
+    // Check auth state
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
   }, [])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,6 +89,24 @@ export default function EggDetector() {
       } else {
         setMatchDetails({ matched: false, similarity: 0, modelUsed: prediction?.modelUsed || 'api' })
       }
+
+      // Save to Supabase if logged in
+      if (user && prediction) {
+        try {
+          const thumbnail = await createThumbnail(selectedFile, 100)
+          await supabase.from('predictions').insert({
+            user_id: user.id,
+            image_url: thumbnail,
+            prediction: prediction.prediction,
+            confidence: prediction.confidence,
+            fertile_prob: prediction.probabilities?.fertile || 0,
+            infertile_prob: prediction.probabilities?.infertile || 0,
+            model_used: prediction.modelUsed || 'unknown'
+          })
+        } catch (err) {
+          console.warn('Failed to save prediction:', err)
+        }
+      }
     } catch (error) {
       console.error('Error:', error)
       alert('Gagal menganalisis gambar. Silakan coba lagi.')
@@ -94,8 +123,27 @@ export default function EggDetector() {
     setMatchDetails(null)
   }
 
+  async function createThumbnail(file: File, size: number): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new window.Image()
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')!
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, size, size)
+          resolve(canvas.toDataURL('image/jpeg', 0.5))
+        }
+        img.src = e.target!.result as string
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-green-50 to-emerald-50">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
 
         {/* Header */}
@@ -321,6 +369,15 @@ export default function EggDetector() {
                 </button>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Login hint */}
+        {!user && (
+          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
+            <p className="text-sm text-yellow-800">
+              💡 <Link href="/login" className="font-semibold underline">Login</Link> untuk menyimpan riwayat prediksi
+            </p>
           </div>
         )}
 

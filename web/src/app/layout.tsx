@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Navbar from '@/components/Navbar'
 import InstallPrompt from '@/components/InstallPrompt'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -14,7 +15,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'Peacock Egg Detector',
-  description: 'Deteksi fertilitas telur merak menggunakan AI - Identify peacock egg fertility using AI',
+  description: 'Deteksi fertilitas telur merak menggunakan AI',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -36,6 +37,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <InstallPrompt />
+        <Navbar />
         {children}
         <script
           dangerouslySetInnerHTML={{
