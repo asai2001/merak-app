@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/Navbar'
+import BottomNav from '@/components/BottomNav'
 import InstallPrompt from '@/components/InstallPrompt'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -30,15 +30,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={inter.className}>
         <InstallPrompt />
-        <Navbar />
         {children}
+        <BottomNav />
         <script
           dangerouslySetInnerHTML={{
             __html: `

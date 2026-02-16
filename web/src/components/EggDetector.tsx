@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Upload, Loader2, CheckCircle, XCircle, Cpu, Database, Camera } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
-import Link from 'next/link'
 
 export default function EggDetector() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -143,17 +142,16 @@ export default function EggDetector() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-green-50 to-emerald-50">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 page-content">
+      <div className="max-w-lg mx-auto px-4 py-6">
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🦚</div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Peacock Egg Detector
+        <div className="text-center mb-6">
+          <h1 className="text-xl font-bold text-gray-800 flex items-center justify-center gap-2">
+            <span className="text-2xl">🦚</span> Peacock Egg Detector
           </h1>
-          <p className="text-gray-600">
-            Deteksi fertilitas telur merak menggunakan AI
+          <p className="text-sm text-gray-500 mt-1">
+            Deteksi fertilitas telur merak dengan AI
           </p>
 
           {isInitializing ? (
@@ -371,17 +369,6 @@ export default function EggDetector() {
             )}
           </div>
         )}
-
-        {/* Login hint */}
-        {!user && (
-          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
-            <p className="text-sm text-yellow-800">
-              💡 <Link href="/login" className="font-semibold underline">Login</Link> untuk menyimpan riwayat prediksi
-            </p>
-          </div>
-        )}
-
-
 
         {/* Footer */}
         <div className="mt-6 text-center text-xs text-gray-400 pb-4">
