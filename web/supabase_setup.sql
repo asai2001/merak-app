@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   full_name VARCHAR(100),
+  email VARCHAR(255),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -49,12 +50,22 @@ CREATE POLICY "Users can delete own predictions"
   ON predictions FOR DELETE
   USING (auth.uid() = user_id);
 
--- 3. Auto-create profile on signup (trigger)
+-- 3. Auto-sync profile on signup and user updates
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, full_name)
-  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name');
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO profiles (id, full_name, email)
+    VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', NEW.email);
+  ELSIF TG_OP = 'UPDATE' THEN
+    UPDATE profiles
+    SET 
+      full_name = COALESCE(NEW.raw_user_meta_data->>'full_name', profiles.full_name),
+      email = NEW.email
+    WHERE id = NEW.id;
+  END IF;
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -62,4 +73,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
+CREATE TRIGGER on_auth_user_updated
+  AFTER UPDATE ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
