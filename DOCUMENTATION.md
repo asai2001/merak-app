@@ -133,6 +133,13 @@ flowchart TD
     SkipSimpan --> End
 ```
 
+### Penjelasan Flowchart:
+1. **Pengecekan Autentikasi**: Saat aplikasi dibuka, sistem akan mengecek apakah pengguna memiliki sesi login yang aktif atau memilih mode Tamu (Guest).
+2. **Proses Masuk**: Jika belum login, pengguna diarahkan ke halaman Login/Daftar. Pengguna bisa memilih membuat akun (data disimpan ke Supabase) atau masuk sebagai Tamu.
+3. **Input Media**: Pada halaman Beranda (Deteksi), pengguna dapat memilih untuk mengambil foto langsung dari Kamera HP atau mengunggah gambar dari Galeri.
+4. **Pemrosesan AI**: Gambar yang diinputkan akan diproses oleh model AI yang dijalankan langsung di browser menggunakan TensorFlow.js.
+5. **Output & Penyimpanan**: Sistem akan menampilkan hasil (Fertil/Infertil) beserta persentase probabilitas. Jika pengguna login menggunakan akun, hasil ini akan disimpan ke *database* Supabase. Jika menggunakan mode Tamu, hasil hanya ditampilkan sementara dan tidak disimpan.
+
 ---
 
 ## 4. Data Flow Diagram (DFD)
@@ -152,6 +159,11 @@ graph LR
     System -- "Hasil Prediksi (Fertil/Infertil)" --> User
     System -- "Daftar Riwayat Prediksi" --> User
 ```
+
+**Penjelasan DFD Level 0:**
+* **Entitas Pengguna** berinteraksi dengan satu kesatuan Sistem utama.
+* Alur data masuk (*input*) berupa **Kredensial Login** dan **Gambar Telur Merak**.
+* Alur data keluar (*output*) berupa **Status Autentikasi**, **Hasil Prediksi Fertilitas**, dan **Daftar Riwayat Prediksi** yang pernah dilakukan.
 
 ### DFD Level 1 (Rincian Proses Utama)
 
@@ -192,6 +204,25 @@ flowchart TD
     User -- "Instruksi Hapus Data" --> P3
     P3 -- "Delete Row" --> D3
 ```
+
+**Penjelasan Proses DFD Level 1:**
+
+* **Proses 1. (Manajemen Akun & Sesi):**
+  * Menerima input data diri (email, nama, password) dari Pengguna.
+  * Memvalidasi kredensial dan mencatat/mengambil data pengguna dari Data Store `D1` (Supabase Auth & Profiles).
+  * Mengembalikan status sesi aktif (Akses Diberikan) atau sesi mode Tamu kepada Pengguna.
+
+* **Proses 2. (Pemrosesan AI & Prediksi):**
+  * Menerima input gambar telur dari Pengguna.
+  * Memuat sekumpulan parameter jaringan saraf tiruan (Weights & Biases) dari Data Store `D2` (File Model TFJS/TFLite yang di-host statis).
+  * Melakukan inferensi/prediksi secara *offline* di sisi klien (browser).
+  * Menampilkan hasil prediksi ke layar Pengguna, dan mengirimkan paket data hasil beserta *thumbnail* gambar (Base64) ke Proses 3.
+
+* **Proses 3. (Manajemen Riwayat):**
+  * Menerima paket data hasil dari Proses 2.
+  * Menyimpan data hasil prediksi tersebut ke dalam Data Store `D3` (Tabel Predictions).
+  * Mengambil (*query*) seluruh baris riwayat yang dimiliki pengguna dari `D3` dan menampilkannya pada halaman Riwayat.
+  * Menerima perintah/instruksi hapus (satuan atau hapus semua) dari Pengguna untuk menghapus (*delete*) baris tertentu pada `D3`.
 
 ---
 **Catatan Penting Pengembangan:**
