@@ -11,19 +11,51 @@ Aplikasi ini menggunakan pendekatan **Deep Learning** berbasis **Convolutional N
 1. **Custom CNN Architecture**: Model CNN yang dibangun dari awal *(from scratch)* khusus untuk dataset telur.
 2. **Transfer Learning (EfficientNetB0)**: Memanfaatkan model pre-trained (yang sudah dilatih pada jutaan gambar ImageNet) dan dilakukan penyesuaian (*fine-tuning*) pada lapisan *(layer)* terakhir. Metode ini sangat disarankan untuk menangani dataset yang terbatas dan tidak seimbang (*imbalanced*).
 
-### Arsitektur Model (Contoh: Transfer Learning)
+### Flowchart Arsitektur CNN (Transfer Learning - EfficientNetB0)
 
-```text
-[ Input Image 224x224x3 ]
-          ↓
-[ EfficientNetB0 Base (Pre-trained) ] --> Ekstraksi Fitur Kompleks (Tekstur, Pola)
-          ↓
-[ Global Average Pooling 2D ]
-          ↓
-[ Dense Layer (Fully Connected) ]
-          ↓
-[ Output Layer (Softmax/Sigmoid) ] --> 2 Class (Fertil / Infertil)
+Berikut adalah detail arsitektur model ketika menggunakan pendekatan *Transfer Learning* dari sekumpulan arsitektur *EfficientNetB0*.
+
+```mermaid
+flowchart TD
+    %% Node Styling
+    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    classDef preTrained fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef customLayer fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#000
+    classDef output fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#000
+
+    IN([Input Image\n224x224x3]) ::: input
+
+    subgraph "EfficientNetB0 Base Model (Frozen/Fine-tuned Layers)"
+        L1[Stem: Conv3x3 + BN + Swish] ::: preTrained
+        L2[MBConv Blocks\nMobile Inverted Bottleneck Conv] ::: preTrained
+        L3[Top: Conv1x1 + BN + Swish] ::: preTrained
+    end
+
+    subgraph "Custom Classification Head"
+        GAP[Global Average Pooling 2D] ::: customLayer
+        DO[Dropout Layer\nPrevent Overfitting] ::: customLayer
+        FC[Dense Layer / Fully Connected] ::: customLayer
+        OUT([Output Layer\nSoftmax - 2 Classes]) ::: output
+    end
+
+    IN --> L1
+    L1 --> L2
+    L2 --> L3
+    L3 --> GAP
+    GAP --> DO
+    DO --> FC
+    FC --> OUT
 ```
+
+**Penjelasan Arsitektur CNN (EfficientNetB0):**
+
+1. **Input Image (224x224x3)**: Gambar telur yang diunggah oleh pengguna akan diubah ukurannya (*resize*) menjadi 224x224 piksel dengan 3 saluran warna (RGB) sebelum dimasukkan ke dalam model saraf.
+2. **EfficientNetB0 Base Model**: Ini adalah fondasi utama pengekstraksi fitur *(Feature Extractor)*. Model ini sudah dilatih sebelumnya (*pre-trained*) pada dataset raksasa (ImageNet). Model ini sangat efisien dan mampu mengenali pola visual yang rumit mulai dari tepi, warna, tekstur, hingga bentuk-bentuk kompleks yang ada pada cangkang telur.
+   * *Stem & MBConv Blocks*: Serangkaian lapisan konvolusi terbalik *(inverted bottleneck)* beralgoritma efisien yang bertugas mengekstrak fitur visual dari resolusi rendah hingga tinggi.
+3. **Global Average Pooling 2D**: Lapisan ini berfungsi untuk meratakan (menyatukan) seluruh peta fitur (*feature maps*) keluaran dari EfficientNet menjadi satu bentuk vektor 1D dengan cara mengambil nilai rata-ratanya. Ini jauh lebih ringan dan mencegah *overfitting* ketimbang lapisan *Flatten* biasa.
+4. **Dropout Layer**: Berfungsi untuk mematikan beberapa koneksi sel saraf secara acak selama proses *training* berlangsung. Hal ini krusial agar model tidak sekadar menghafal gambar telur saat *training* (*overfitting*), melainkan benar-benar belajar polanya.
+5. **Dense Layer**: Lapisan saraf buatan kustom yang sepenuhnya terhubung *(Fully Connected Layer)* yang kita susun sendiri di ujung arsitektur. Matriks fitur diterjemahkan ke dalam probabilitas klasifikasi.
+6. **Output Layer (Softmax)**: Lapis terakhir dalam model ini memiliki 2 sel saraf keluaran yang dipasangkan dengan fungsi aktivasi *Softmax*. Fungsi ini akan merubah angka matematis menjadi probabilitas persentase untuk 2 kelas prediksi akhir: **Fertil** (Subur) dan **Infertil** (Tidak Subur).
 
 ### Alur Pelatihan Model (Training Workflow)
 
