@@ -23,19 +23,19 @@ flowchart TD
     classDef customLayer fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#000
     classDef output fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#000
 
-    IN([Input Image\n224x224x3]) ::: input
+    IN(["Input Image<br>224x224x3"])
 
     subgraph "EfficientNetB0 Base Model (Frozen/Fine-tuned Layers)"
-        L1[Stem: Conv3x3 + BN + Swish] ::: preTrained
-        L2[MBConv Blocks\nMobile Inverted Bottleneck Conv] ::: preTrained
-        L3[Top: Conv1x1 + BN + Swish] ::: preTrained
+        L1["Stem: Conv3x3 + BN + Swish"]
+        L2["MBConv Blocks<br>Mobile Inverted Bottleneck Conv"]
+        L3["Top: Conv1x1 + BN + Swish"]
     end
 
     subgraph "Custom Classification Head"
-        GAP[Global Average Pooling 2D] ::: customLayer
-        DO[Dropout Layer\nPrevent Overfitting] ::: customLayer
-        FC[Dense Layer / Fully Connected] ::: customLayer
-        OUT([Output Layer\nSoftmax - 2 Classes]) ::: output
+        GAP["Global Average Pooling 2D"]
+        DO["Dropout Layer<br>Prevent Overfitting"]
+        FC["Dense Layer / Fully Connected"]
+        OUT(["Output Layer<br>Softmax - 2 Classes"])
     end
 
     IN --> L1
@@ -45,6 +45,11 @@ flowchart TD
     GAP --> DO
     DO --> FC
     FC --> OUT
+
+    class IN input
+    class L1,L2,L3 preTrained
+    class GAP,DO,FC customLayer
+    class OUT output
 ```
 
 **Penjelasan Arsitektur CNN (EfficientNetB0):**
